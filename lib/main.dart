@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:key_value_store_flutter/key_value_store_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:sample_app/Helper/FileRepository.dart';
 import 'package:sample_app/shared_dependencies/localStorage/key_value_storage.dart';
 import 'package:sample_app/shared_dependencies/localStorage/reactive_repository.dart';
 import 'package:sample_app/shared_dependencies/localStorage/repository.dart';
@@ -20,6 +21,12 @@ import 'AuthenticationBloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  var storage = LocalStorageRepository(
+    localStorage: KeyValueStorage(
+      'simple_bloc',
+      FlutterKeyValueStore(await SharedPreferences.getInstance()),
+    ),
+  );
 
   runApp(MaterialApp(
       title: 'Flutter Login Demo',
@@ -29,15 +36,11 @@ Future<void> main() async {
       home: RootPage(
         authenticationBloc: AuthenticationBloc(
             streamController: StreamController<AuthenticationState>(),
-            ),
+            repo: FileRepository(storage: FlutterKeyValueStore(await SharedPreferences.getInstance()))
+        ),
         todosInteractor: TodosInteractor(
           ReactiveLocalStorageRepository(
-            repository: LocalStorageRepository(
-              localStorage: KeyValueStorage(
-                'simple_bloc',
-                FlutterKeyValueStore(await SharedPreferences.getInstance()),
-              ),
-            ),
+            repository: storage,
           ),
         ),
         userRepository: AnonymousUserRepository(),

@@ -1,10 +1,12 @@
 import 'dart:async';
-import 'Helper/FileAccess.dart';
+import 'package:sample_app/Helper/FileRepository.dart';
+
 import 'model/User.dart';
 
 class AuthenticationBloc {
   final StreamController<AuthenticationState> streamController;
-  AuthenticationBloc({this.streamController});
+  final FileRepository repo;
+  AuthenticationBloc({this.streamController,this.repo});
 
   Stream<AuthenticationState> get stream => streamController.stream;
 
@@ -14,16 +16,16 @@ class AuthenticationBloc {
   }
 
   void login(String email,String token) async {
-    await FileAccess.write(User(email, email, 'token', true));
+    await repo.write(User(email, email, 'token', true));
     streamController.add(AuthenticationState.loggedIn());
   }
   void logout() async{
-    await FileAccess.delete2();
+    await repo.delete();
     streamController.add(AuthenticationState.loggedOut());
   }
 
   Future<AuthenticationState> getCurrentUser() async {
-    var user = await FileAccess.read();
+    var user = await repo.read();
     if(user != null){
       return AuthenticationState.loggedIn();
     }else{
