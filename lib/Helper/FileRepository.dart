@@ -21,12 +21,12 @@ class FileRepository {
 
   Future<String> write(User user) async {
     var content = jsonEncode(user);
-    storage.setString("user", content);
+    await storage.setString("user", content);
     return null;
   }
 
   Future<String> delete() async {
-    storage.remove("user");
+    await storage.remove("user");
     return null;
   }
 
